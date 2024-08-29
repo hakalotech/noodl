@@ -1,0 +1,106 @@
+packages/noodl-editor/src/editor/src/models/nodegraphmodel/NodeGraphNode.ts
+  - class NodeGraphNode
+    - constructor(args)
+    - static fromJSON(json: NodeGraphNodeJSON): NodeGraphNode
+    - getModule()
+    - updateType()
+    - forEach(callback: (node: NodeGraphNode) => boolean | void): boolean
+    - forEachRecursive(callback: (node: NodeGraphNode) => boolean | void): boolean
+    - isPortConnected(portname, type?)
+    - forAllConnectionsOnThisNode(callback: (connection: { fromId: string; fromProperty: string; toId: string; toProperty: string }) => void)
+    - getConnectionsOnThisNode(): { fromId: string; fromProperty: string; toId: string; toProperty: string }[]
+    - addPort(port: NodeGrapPort, args?)
+    - findPortWithName(portname: string): NodeGrapPort
+    - arrangePort(portname: string, index: number, group: string, args?)
+    - renamePortWithName(portname: string, newname: string, args?)
+    - removePortWithName(portname, args?)
+    - getPort(portname: string, filter?: 'input' | 'output'): NodeGrapPort | undefined
+    - getPorts(filters?: 'input' | 'output'): NodeGrapPort[]
+    - addChild(child: NodeGraphNode, args?)
+    - insertChild(child: NodeGraphNode, index: number, args?)
+    - canAcceptChildren(models: NodeGraphNode[])
+    - canBeDeleted()
+    - canBeCopied()
+    - setLabel(label: string, args?: { undo?: any; label?: any })
+    - setParameter(name: string, value, args?)
+    - getParameter(name: string, args?)
+    - setDynamicPorts(ports: NodeGrapPort[], options?: DynamicPortsOptions)
+    - getHealth()
+    - evaluateHealth()
+    - updateVariantRef()
+    - setVariant(variant, args?)
+    - _setParameters(parameters)
+    - createNewVariant(variantName, args)
+    - updateVariant(args)
+    - getStateTransition(state, parameterName)
+    - _setStateTransitions(transitions)
+    - setStateTransition(state, parameterName, curve, args?)
+    - getDefaultStateTransition(state = 'neutral')
+    - setDefaultStateTransition(state = 'neutral', curve, args?)
+    - getPossibleTransitionsForState(state)
+    - toJSON()
+
+packages/noodl-editor/src/editor/src/models/undo-queue-model.ts
+  - class UndoQueue
+    - constructor()
+    - getHistoryLocation(): number
+    - getHistory(): readonly UndoActionGroup[]
+    - push(action: UndoActionGroup)
+    - pushAndDo(action: UndoActionGroup)
+    - undo()
+    - redo()
+    - clear()
+  - class UndoActionGroup
+    - constructor(args: UndoActionGroupOptions)
+    - push(a: UndoActionGroupActions)
+    - pushAndDo(a: UndoActionGroupActions)
+    - do()
+    - undo()
+    - isEmpty()
+
+packages/noodl-editor/src/editor/src/utils/CodeEditor/model.ts
+  - interface createModelOptions
+  - function createModel(options: createModelOptions, node: NodeGraphNode): EditorModel
+
+packages/noodl-editor/src/editor/src/utils/CodeEditor/model/editorModel.ts
+  - class EditorModel
+    - constructor(model: monaco.editor.ITextModel, modules: TypescriptModule[] = [])
+    - attachEditor(editor: monaco.editor.IStandaloneCodeEditor)
+    - getValue(): string
+    - getPrettyLanguageName()
+    - dispose()
+
+packages/noodl-editor/src/shared/utils/EventDispatcher.ts
+  - class EventDispatcher
+    - constructor()
+    - on(event: string | string[], listener, group: unknown)
+    - notifyListeners(event: string, args?)
+    - emit(event: string, args?)
+    - off(group: unknown)
+
+packages/noodl-git/src/actions/push.ts
+  - interface PushOptions
+  - function push({ baseDir, currentBranch, onProgress }: PushOptions): Promise<boolean>
+
+packages/noodl-git/src/core/git-error.ts
+  - function parseCommitSHA(result: IGitResult): string
+  - interface IGitResult
+  - class GitError
+    - constructor(result: IGitResult, args: ReadonlyArray<string>)
+  - function isAuthFailureError(error: DugiteError): boolean
+  - function getDescriptionForError(error: DugiteError): string | null
+
+packages/noodl-git/src/core/models/commit-identity.ts
+  - class CommitIdentity
+    - static parseIdentity(identity: string): CommitIdentity
+    - constructor(name: string, email: string, date: Date, tzOffset: number = new Date().getTimezoneOffset())
+
+packages/noodl-git/src/core/progress/common.ts
+  - interface IProgressStep
+  - interface IGitProgress
+  - interface IGitOutput
+  - interface IGitProgressInfo
+  - class GitProgressParser
+    - constructor(steps: ReadonlyArray<IProgressStep>)
+    - parse(line: string): IGitProgress | IGitOutput
+  - function parse(line: string): IGitProgressInfo | null
