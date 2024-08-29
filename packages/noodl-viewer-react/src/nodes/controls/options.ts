@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Select } from '../../components/controls/Select';
+import { Select } from '../../components/controls/Select';
 import guid from '../../guid';
 import NodeSharedPortDefinitions from '../../node-shared-port-definitions';
 import { createNodeFromReactComponent } from '../../react-component-node';
