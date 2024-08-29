@@ -64,7 +64,17 @@ const OptionsNode = {
     };
   },
   getReactComponent() {
-    return () => <Select items={this.props.items} value={this.props.value} onChange={this.props.valueChanged} />;
+    return () => {
+      const [items, setItems] = useState(this.props.items || []);
+      const [value, setValue] = useState(this.props.value || '');
+
+      useEffect(() => {
+        this.props.itemsChanged = setItems;
+        this.props.valueChanged = setValue;
+      }, []);
+
+      return <Select items={items} value={value} onChange={setValue} />;
+    };
   },
   inputs: {
     items: {
@@ -111,7 +121,7 @@ const OptionsNode = {
       displayName: 'Value',
       group: 'States',
       getter: function () {
-        return this._internal.value;
+        return this.props.value;
       }
     },
     onChange: {
