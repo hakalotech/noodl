@@ -32,64 +32,63 @@ const OptionsNode = {
     ]
   },
   initialize: function () {
-    this._itemsChanged = () => {
-      this.forceUpdate();
-    };
+    const [items, setItems] = useState([]);
+    const [value, setValue] = useState('');
+    
+    useEffect(() => {
+      this.props.id = 'input-' + guid();
+    }, []);
 
-    this.props.id = 'input-' + guid();
+    this.props.valueChanged = (newValue) => {
+      if (newValue !== undefined && typeof newValue !== 'string') {
+        if (newValue?.toString !== undefined) newValue = newValue.toString();
+        else return;
+      }
 
-    this.props.valueChanged = (value) => {
-      const changed = this._internal.value !== value;
-      this._internal.value = value;
+      const changed = value !== newValue;
+      setValue(newValue);
+
       if (changed) {
         this.flagOutputDirty('value');
         this.sendSignalOnOutput('onChange');
       }
     };
+
+    this.props.clear = () => {
+      setValue('');
+      this.flagOutputDirty('value');
+    };
+
+    this.props.itemsChanged = (newItems) => {
+      setItems(newItems);
+    };
   },
   getReactComponent() {
-    return Select;
+    return () => <Select items={this.props.items} value={this.props.value} onChange={this.props.valueChanged} />;
   },
   inputs: {
     items: {
       type: 'array',
       displayName: 'Items',
       group: 'General',
-      set: function (newValue) {
-        if (this._internal.items !== newValue && this._internal.items !== undefined) {
-          this._internal.items.off('change', this._itemsChanged);
-        }
-        this._internal.items = newValue;
-        this._internal.items.on('change', this._itemsChanged);
-
-        this.props.items = this._internal.items;
-
-        this.forceUpdate();
+      set: function (newItems) {
+        this.props.itemsChanged(newItems);
       }
     },
     value: {
       type: 'string',
       displayName: 'Value',
       group: 'General',
-      set: function (value) {
-        if (value !== undefined && typeof value !== 'string') {
-          if (value?.toString !== undefined) value = value.toString();
-          else return;
-        }
-
-        // // if value is passed in before the items, then items is undefined
-        // if (this._internal.items) {
-        //   //make sure this is a valid value that exists in the dropdown. If it doesn't, deselect all options
-        //   value = this._internal.items.find((i) => i.Value === value) ? value : undefined;
-        // }
-
-        const changed = value !== this._internal.value;
-        this.props.value = this._internal.value = value;
-
-        if (changed) {
-          this.forceUpdate();
-          this.flagOutputDirty('value');
-        }
+      set: function (newValue) {
+        this.props.valueChanged(newValue);
+      }
+    },
+    clear: {
+      type: 'signal',
+      displayName: 'Clear',
+      group: 'Actions',
+      set: function () {
+        this.props.clear();
       }
     }
   },
